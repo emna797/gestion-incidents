@@ -1,0 +1,9 @@
+{% macro priorite(p) -%}
+  {% set c = {'Faible': 'low', 'Moyenne': 'mid', 'Élevée': 'high'}[p] %}
+  <span class="badge prio-{{ c }}">{{ p }}</span>
+{%- endmacro %}
+
+{% macro statut(s) -%}
+  {% set c = {'Nouveau': 'new', 'En cours': 'progress', 'Résolu': 'done'}[s] %}
+  <span class="badge st-{{ c }}">{{ s }}</span>
+{%- endmacro %}
