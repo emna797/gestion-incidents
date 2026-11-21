@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_macros.html" import priorite, statut %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Incidents</h1>
+    <div class="muted">Suivi des incidents signalés par les étudiants et enseignants</div>
+  </div>
+  <a class="btn" href="{{ url_for('add_incident') }}">＋ Nouvel incident</a>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num">{{ incidents|length }}</div><div class="lbl">Total</div></div>
+  <div class="stat new"><div class="num">{{ incidents|selectattr('statut','equalto','Nouveau')|list|length }}</div><div class="lbl">Nouveaux</div></div>
+  <div class="stat progress"><div class="num">{{ incidents|selectattr('statut','equalto','En cours')|list|length }}</div><div class="lbl">En cours</div></div>
+  <div class="stat done"><div class="num">{{ incidents|selectattr('statut','equalto','Résolu')|list|length }}</div><div class="lbl">Résolus</div></div>
+</div>
+
+<div class="card">
+  {% if incidents %}
+  <input class="search" id="search" type="search" placeholder="🔍 Rechercher un incident (titre, lieu, statut...)">
+  <table id="table">
+    <thead>
+      <tr><th>#</th><th>Titre</th><th class="col-lieu">Lieu</th><th>Priorité</th><th>Statut</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for i in incidents %}
+      <tr>
+        <td class="muted">{{ i.id }}</td>
+        <td><a class="incident-title" href="{{ url_for('detail', incident_id=i.id) }}">{{ i.titre }}</a></td>
+        <td class="col-lieu">{{ i.lieu }}</td>
+        <td>{{ priorite(i.priorite) }}</td>
+        <td>{{ statut(i.statut) }}</td>
+        <td><a class="btn btn-light" href="{{ url_for('detail', incident_id=i.id) }}">Détails</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <script>
+    document.getElementById('search').addEventListener('input', function () {
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('#table tbody tr').forEach(function (tr) {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  </script>
+  {% else %}
+  <div class="empty">
+    <div style="font-size:42px">📭</div>
+    <p>Aucun incident pour le moment.</p>
+    <a class="btn" href="{{ url_for('add_incident') }}">Signaler le premier incident</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import priorite, statut %}
+{% block content %}
+<p><a href="{{ url_for('index') }}">← Retour à la liste</a></p>
+<div class="card">
+  <div class="page-head" style="margin-bottom:0">
+    <div>
+      <div class="muted">Incident #{{ incident.id }}</div>
+      <h1>{{ incident.titre }}</h1>
+    </div>
+    <div>{{ priorite(incident.priorite) }} {{ statut(incident.statut) }}</div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="detail-item"><div class="k">Lieu</div><div class="v">{{ incident.lieu }}</div></div>
+    <div class="detail-item"><div class="k">Priorité</div><div class="v">{{ incident.priorite }}</div></div>
+    <div class="detail-item"><div class="k">Statut</div><div class="v">{{ incident.statut }}</div></div>
+  </div>
+
+  <div class="detail-item"><div class="k">Description</div></div>
+  <div class="desc-box">{{ incident.description }}</div>
+
+  <div class="actions">
+    <form class="inline-form" method="post" action="{{ url_for('update_statut', incident_id=incident.id) }}">
+      <div>
+        <label for="statut">Modifier le statut</label>
+        <select id="statut" name="statut">
+          {% for s in statuts %}
+          <option {% if s == incident.statut %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit">Mettre à jour</button>
+    </form>
+
+    <form method="post" action="{{ url_for('delete_incident', incident_id=incident.id) }}"
+          onsubmit="return confirm('Supprimer cet incident ?');">
+      <button class="btn-danger" type="submit">🗑 Supprimer</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

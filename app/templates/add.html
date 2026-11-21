@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Signaler un incident</h1>
+    <div class="muted">Décrivez le problème rencontré</div>
+  </div>
+</div>
+<div class="card">
+  <form method="post">
+    <label for="titre">Titre</label>
+    <input id="titre" name="titre" placeholder="Ex. : Projecteur en panne" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="5" placeholder="Décrivez le problème..." required></textarea>
+
+    <label for="lieu">Lieu (salle ou laboratoire)</label>
+    <input id="lieu" name="lieu" placeholder="Ex. : Labo info 2" required>
+
+    <label for="priorite">Priorité</label>
+    <select id="priorite" name="priorite">
+      {% for p in priorites %}<option>{{ p }}</option>{% endfor %}
+    </select>
+
+    <div class="form-actions">
+      <button type="submit">Enregistrer</button>
+      <a class="btn btn-light" href="{{ url_for('index') }}">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
