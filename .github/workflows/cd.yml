@@ -1,0 +1,56 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installer les dépendances
+        run: pip install -r requirements-dev.txt
+
+      - name: Exécuter les tests
+        run: python -m pytest -v
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Définir le nom de l'image (en minuscules)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/gestion-incidents" >> "$GITHUB_ENV"
+
+      - name: Connexion à GHCR avec GITHUB_TOKEN
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construire l'image Docker
+        run: |
+          docker build \
+            -t "$IMAGE:latest" \
+            -t "$IMAGE:${{ github.sha }}" .
+
+      - name: Publier l'image dans GHCR
+        run: |
+          docker push "$IMAGE:latest"
+          docker push "$IMAGE:${{ github.sha }}"
