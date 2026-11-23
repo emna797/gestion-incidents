@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    image: gestion-incidents:latest
+    container_name: incidents-web
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_PATH: /app/data/incidents.db
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+    restart: unless-stopped
+    volumes:
+      - incidents-data:/app/data
+
+volumes:
+  incidents-data:
